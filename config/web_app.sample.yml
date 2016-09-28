@@ -1,0 +1,15 @@
+deployment:
+  command: "cap deploy {environment}"
+  slack_channel: "slack-channel-name"
+  staging:
+    servers:
+      - "fqdn_to_server1"
+      - "fqdn_to_server2"
+    app_path: "/full/path/to/app/current"
+    username: "deploy-user"
+  production:
+    servers:
+      - "fqdn_to_server1"
+      - "fqdn_to_server2"
+    app_path: "/full/path/to/app/current"
+    username: "deploy-user"

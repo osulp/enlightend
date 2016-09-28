@@ -1,0 +1,9 @@
+slack:
+  bot_name: "hubot"
+  channel: "general"
+  token: "bogus-password"
+  message_url: "http://some.server/hubot/msg/{channel}"
+github:
+  username: "<Github Username>"
+  gist_token: "<Personal API Token Here>"
+  api_endpoint: "https://api.github.com"
