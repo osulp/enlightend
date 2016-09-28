@@ -8,7 +8,7 @@ class AppTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   def setup
-    @json = '{ "environment": "staging",  "repository": { "name": "web_app" } }'
+    @json = '{ "deployment":{ "environment": "staging" },  "repository": { "name": "web_app" } }'
   end
 
   def app

@@ -19,7 +19,7 @@ end
 post "/events" do
   data = JSON.parse request.body.read
   app_name = data['repository']['name']
-  environment = data['environment']
+  environment = data['deployment']['environment']
 
   app_config = load_config(app_name)
 
