@@ -43,5 +43,6 @@ bower.json
 # Ignore Byebug command history file.
 .byebug_history
 
-/config/web_app.yml
-/config/sinatra.yml
+# ignore all config yml files that arne't .sample.yml
+/config/*.yml
+!/config/*.sample.yml

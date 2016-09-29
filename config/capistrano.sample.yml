@@ -1,0 +1,13 @@
+deployment:
+  staging:
+    username: "server_username"
+    deploy_to: "full_path_to_app"
+    servers:
+      - "fdqn_to_server1"
+      - "fqdn_to_server2"
+  production:
+    username: "server_username"
+    deploy_to: "full_path_to_app"
+    servers:
+      - "fdqn_to_server1"
+      - "fqdn_to_server2"
