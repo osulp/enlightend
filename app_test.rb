@@ -19,4 +19,12 @@ class AppTest < Test::Unit::TestCase
     post '/events', @json
     assert last_response.ok?
   end
+
+  def test_it_handles_errors
+    begin
+      post '/events', '{ "deployment":{ "environment": "staging" },  "repository": { "name": "BOGUS" } }'
+    rescue => e
+      assert !e.nil?
+    end
+  end
 end
