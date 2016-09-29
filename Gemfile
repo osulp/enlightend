@@ -2,7 +2,8 @@ source :rubygems
 
 gem "sinatra"
 gem "octokit"
-gem "sidekiq"
+# older version necessary for version of redis on server
+gem "sidekiq", "~> 3.2.5"
 gem "redis"
 gem "unicorn"
 

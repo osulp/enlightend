@@ -8,7 +8,13 @@ require 'octokit'
 require 'redis'
 require 'sidekiq'
 
-$redis = Redis.new
+Sidekiq.configure_client do |config|
+  config.redis = { :namespace => "deployment", :size => 1 }
+end
+
+Sidekiq.configure_server do |config|
+  config.redis = { :namespace => "deployment" }
+end
 
 ##
 # Configure the sinatra application with the application base configurations in config/sinatra.yml
@@ -21,17 +27,18 @@ end
 #  The endpoint that this Sinatra app is listening on should be the target of a webhook for "Deployment Status" and "Deployment" for
 #  the repository to be deployed using this application.
 post "/events" do
+  # JSON data payload comes from github webook
   data = JSON.parse request.body.read
   app_name = data['repository']['name']
   environment = data['deployment']['environment']
 
   app_config = load_config(app_name)
 
-  servers = app_config['deployment'][environment]['servers']
+  channel = app_config['deployment']['slack_channel'].empty? ? settings.config['slack']['channel'] : app_config['deployment']['slack_channel']
   command = app_config['deployment']['command']
+  servers = app_config['deployment'][environment]['servers']
   username = app_config['deployment'][environment]['username']
   app_path = app_config['deployment'][environment]['app_path']
-  channel = app_config['deployment']['slack_channel'].empty? ? settings.config['slack']['channel'] : app_config['deployment']['slack_channel']
 
   # get all the users gists that are like {app_name}_deploy, keep the most recent 3 and delete the rest
   gists = github_client.gists(settings.config['github']['username'])
@@ -66,7 +73,10 @@ end
 class Worker
   include Sidekiq::Worker
 
+  ##
+  # Perform the task of remote deploying the application, sending a slack message, and posting a gist
   def perform(server, username, app_path, command, environment, app_name, channel, config)
+    slack_message(config, "#{app_name} : Deploying #{environment} environment to #{server}.", channel)
     cmd = "ssh #{username}@#{server} 'cd -- #{app_path} && #{command.gsub('{environment}', environment)}'"
     o, s = Open3.capture2e(cmd)
     gist = post_gist(config, app_name, o)
@@ -110,10 +120,10 @@ class Worker
     end
   end
 
-
   ##
   # Post a new gist to github with the output from the capistrano remote command
   #
+  # @param config [Hash] the settings.config (sinatra.yml)
   # @param app_name [String] the application name being deployed
   # @param cap_out [String] the output from the deployment command
   # @return [Sawyer::Resource] the gist that was created using Octokit
