@@ -1,5 +1,4 @@
 config = YAML.load_file('config/apps/enlightend.yml')["deployment"] || {}
-deployable_apps = YAML.load_file('config/deploy_apps.yml')["apps"] || []
 
 # config valid only for current version of Capistrano
 lock '3.6.1'
@@ -29,10 +28,10 @@ set :ssh_options, { :forward_agent => true }
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, ['config/app.yml', 'config/god.conf', 'config/unicorn.rb', '.ruby-version'] + deployable_apps
+set :linked_files, ['config/app.yml', 'config/god.conf', 'config/unicorn.rb', '.ruby-version']
 
 # Default value for linked_dirs is []
-set :linked_dirs, ['log', 'tmp']
+set :linked_dirs, ['log', 'tmp', 'config/apps']
 
 # Default value for default_env is {}
 set :default_env, { path: "~/.rbenv/shims:~/.rbenv/bin:$PATH" }

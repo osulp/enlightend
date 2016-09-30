@@ -36,8 +36,6 @@ end
 # http://capistranorb.com/documentation/getting-started/configuration/
 # Feel free to add new variables to customise your setup.
 
-set :deploy_to, environment_config['deploy_to']
-
 
 # Custom SSH Options
 # ==================

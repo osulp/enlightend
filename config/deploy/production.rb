@@ -1,4 +1,4 @@
-config = YAML.load_file('config/apps/enlightend.yml')["deployment"] || {}
+config = YAML.load_file('config/app.yml')["deployment"] || {}
 environment_config = config["production"]
 
 # server-based syntax
@@ -35,8 +35,6 @@ end
 # For available Capistrano configuration variables see the documentation page.
 # http://capistranorb.com/documentation/getting-started/configuration/
 # Feel free to add new variables to customise your setup.
-
-set :deploy_to, environment_config['deploy_to']
 
 
 # Custom SSH Options
