@@ -1,0 +1,7 @@
+# a list of deployable app paths for linking on the server, each line should be the relative path to the
+# yaml file containing the application configuration. The yaml filename should match the github repo name that is
+# being deployed
+apps:
+  - "config/apps/enlightend.yml"
+  - "config/apps/Scholars-Archive.yml"
+  - "config/apps/ControlledVocabularyManager.yml"

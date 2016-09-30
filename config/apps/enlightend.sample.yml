@@ -1,0 +1,28 @@
+# An example configuration used by capistrano for the deployment app itself.
+deployment:
+
+  #########
+  # deploy_to: Used by capistrano to deploy the deployment app, this is specific for the 'enlightend' app, not
+  # for regular deployable applications
+  deploy_to: "path_to_capistrano_deploy"
+  ######################################
+
+  # SSH command to run on target server, {environment} is replaced with either "production" or "staging"
+  command: "cap deploy {environment}"
+
+  # Slack channel to send notifications with application deployment status
+  slack_channel: "slack-channel-name"
+
+  # production environment configurations
+  production:
+
+    # list of servers to deploy application to
+    servers:
+      - "fdqn_to_server1"
+      - "fqdn_to_server2"
+
+    # the path to the currently deployed instance of the application
+    app_path: "full_path_to_current_app"
+
+    # the server username with key-auth access to run the SSH command for deployment
+    username: "server_username"

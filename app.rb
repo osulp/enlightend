@@ -44,10 +44,10 @@ Sidekiq.configure_server do |config|
   config.redis = { :namespace => "deployment" }
 end
 
-#
-# Configure the sinatra application with the application base configurations in config/sinatra.yml
+##
+# Configure the sinatra application with the application base configurations in config/app.yml
 configure do
-  set(:config) { load_config("sinatra") }
+  set(:config) { load_config("config/#{File.basename(__FILE__, ".*")}.yml") }
 end
 
 ##
@@ -59,20 +59,24 @@ post "/events" do
     # JSON data payload comes from github webook
     data = JSON.parse request.body.read
 
+    # variables for slack notifications
     app_name = data['repository']['name']
     environment = data['deployment']['environment']
     channel = settings.config['slack']['channel']
 
-    app_config = load_config(app_name)
+    # load the config specific to the app being deployed
+    deploy_app_config = settings.config['deploy_app_config']
+    app_config = load_config(deploy_app_config.gsub("{app_name}", app_name))
 
-    github_client = Octokit::Client.new(access_token: settings.config['github']['gist_token'], api_endpoint: settings.config['github']['api_endpoint'])
-    channel = app_config['deployment']['slack_channel'].empty unless app_config['deployment']['slack_channel'].empty?
+    # set the variables related to the app being deployed
+    channel = app_config['deployment']['slack_channel'] unless app_config['deployment']['slack_channel'].empty?
     command = app_config['deployment']['command']
     servers = app_config['deployment'][environment]['servers']
     username = app_config['deployment'][environment]['username']
     app_path = app_config['deployment'][environment]['app_path']
 
     # get all the users gists that are like {app_name}_deploy, keep the most recent 3 and delete the rest
+    github_client = Octokit::Client.new(access_token: settings.config['github']['gist_token'], api_endpoint: settings.config['github']['api_endpoint'])
     gists = github_client.gists(settings.config['github']['username'])
               .select { |g| g.files.to_hash.has_key?("#{app_name}_deploy".to_sym) }
               .sort { |a, b| a.created_at <=> b.created_at }
@@ -81,10 +85,12 @@ post "/events" do
       github_client.delete_gist(g.id)
     end
 
+    # fire off a worker to deploy the app to each configured server
     servers.each do |server|
       Worker.perform_async(server, username, app_path, command, environment, app_name, channel, settings.config)
     end
 
+    # return a quick 200 to github deployment event server
     200
   rescue => e
     slack_message(settings.config, "#{app_name} : :x: : Unable to deploy to #{environment}, exception: #{e.message}", channel)
@@ -95,9 +101,9 @@ end
 ##
 # Load a config yml file
 #
-# @param filename [String] the filename of the configuration yml
-def load_config(filename)
-  YAML.load_file(File.join(File.dirname(__FILE__), "config/#{filename}.yml"))
+# @param file_relative_path [String] the relative path to the config file
+def load_config(file_relative_path)
+  YAML.load_file(File.join(File.dirname(__FILE__), file_relative_path))
 end
 
 ##
