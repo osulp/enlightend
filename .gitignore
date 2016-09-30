@@ -44,5 +44,8 @@ bower.json
 .byebug_history
 
 # ignore all config yml files that arne't .sample.yml
-/config/*.yml
-!/config/*.sample.yml
+/config/**/*.yml
+!/config/**/*.sample.yml
+
+# this one is used to list the deploy apps
+!/config/deploy_apps.yml

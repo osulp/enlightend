@@ -1,0 +1,29 @@
+# the path to an application to be deployed, {app_name} is replaced with the github repository name (ie. oregondigital)
+deploy_app_config: "config/apps/{app_name}.yml"
+
+# slack bot configurations for deployment notifications
+slack:
+
+  # bot name in the chat channel
+  bot_name: "hubot"
+
+  # default channel name for notifications, can be overridden by each deployable app configuration
+  channel: "general"
+
+  # token for server side validation of message posting access, configured on Heroku server
+  token: "bogus-password"
+
+  # bot url for sending message payload to
+  message_url: "http://some.server/hubot/msg/{channel}"
+
+# github API configurations for creating gists
+github:
+
+  # github account hosting the private gist messages with deployment output
+  username: "<Github Username>"
+
+  # token set on github account allowing API access to gists
+  gist_token: "<Personal API Token Here>"
+
+  # githup api
+  api_endpoint: "https://api.github.com"

@@ -1,4 +1,4 @@
-config = YAML.load_file('config/capistrano.yml')["deployment"] || {}
+config = YAML.load_file('config/apps/enlightend.yml')["deployment"] || {}
 environment_config = config["production"]
 
 # server-based syntax

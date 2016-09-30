@@ -1,0 +1,36 @@
+# An example configuration for a deployable application
+deployment:
+
+  # SSH command to run on target server, {environment} is replaced with either "production" or "staging"
+  command: "cap deploy {environment}"
+
+  # Slack channel to send notifications with application deployment status
+  slack_channel: "slack-channel-name"
+
+  # staging environment configurations
+  staging:
+
+    # list of servers to deploy application to
+    servers:
+      - "fdqn_to_server1"
+      - "fqdn_to_server2"
+
+    # the path to the currently deployed instance of the application
+    app_path: "full_path_to_current_app"
+
+    # the server username with key-auth access to run the SSH command for deployment
+    username: "server_username"
+
+  # production environment configurations
+  production:
+
+    # list of servers to deploy application to
+    servers:
+      - "fdqn_to_server1"
+      - "fqdn_to_server2"
+
+    # the path to the currently deployed instance of the application
+    app_path: "full_path_to_current_app"
+
+    # the server username with key-auth access to run the SSH command for deployment
+    username: "server_username"
