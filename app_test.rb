@@ -27,4 +27,11 @@ class AppTest < Test::Unit::TestCase
       assert !e.nil?
     end
   end
+
+  def test_it_can_get_a_channel
+    app_config = {"deployment" => {"slack_channel" => "default"}}
+    deployment_data = {"deployment" => {"payload" => {"notify" => {"room" => "room"}}}}
+    assert app.send(:get_channel, app_config, {}) == "default"
+    assert app.send(:get_channel, app_config, deployment_data) == "room"
+  end
 end
