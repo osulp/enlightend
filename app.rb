@@ -9,6 +9,16 @@ require 'redis'
 require 'sidekiq'
 
 ##
+# Add dig to the hash for nested deep queries
+class Hash
+  def dig(*path)
+    path.inject(self) do |location, key|
+      location.respond_to?(:keys) ? location[key] : nil
+    end
+  end
+end
+
+##
 # A module to expose slack notification functionality to the worker and the sinatra app
 module SlackNotifier
   ##
@@ -69,7 +79,7 @@ post "/events" do
     app_config = load_config(deploy_app_config.gsub("{app_name}", app_name))
 
     # set the variables related to the app being deployed
-    channel = app_config['deployment']['slack_channel'] unless app_config['deployment']['slack_channel'].empty?
+    channel = get_channel(app_config, data)
     command = app_config['deployment']['command']
     servers = app_config['deployment'][environment]['servers']
     username = app_config['deployment'][environment]['username']
@@ -104,6 +114,17 @@ end
 # @param file_relative_path [String] the relative path to the config file
 def load_config(file_relative_path)
   YAML.load_file(File.join(File.dirname(__FILE__), file_relative_path))
+end
+
+##
+# Return the appropriate Slack channel to send the message to
+#
+# @param app_config [Hash] the application configuration
+# @param deployment_data [Hash] the deployment message from Github
+def get_channel(app_config, deployment_data)
+  channel = app_config['deployment']['slack_channel'] unless app_config['deployment']['slack_channel'].empty?
+  channel = deployment_data['deployment']['payload']['notify']['room'] if deployment_data.dig('deployment','payload','notify','room')
+  channel
 end
 
 ##
