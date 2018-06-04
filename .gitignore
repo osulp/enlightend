@@ -49,3 +49,5 @@ bower.json
 
 # this one is used to list the deploy apps
 !/config/deploy_apps.yml
+.vscode*
+.idea*
