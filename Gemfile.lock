@@ -34,8 +34,8 @@ GEM
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
     power_assert (0.2.2)
-    rack (1.6.4)
-    rack-protection (1.5.3)
+    rack (1.6.10)
+    rack-protection (1.5.5)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -78,6 +78,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rbenv
   octokit
+  rack-protection (~> 1.5.5)
   rack-test
   redis
   sidekiq (~> 3.2.5)
@@ -86,4 +87,4 @@ DEPENDENCIES
   unicorn
 
 BUNDLED WITH
-   1.12.5
+   1.16.2
