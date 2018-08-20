@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'ddtrace'
 require 'sinatra'
+require 'ddtrace'
+require 'ddtrace/contrib/sinatra/tracer'
 require 'sidekiq'
 
 Datadog.configure do |c|
