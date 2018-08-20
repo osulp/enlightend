@@ -30,7 +30,7 @@ module SlackNotifier
   # @param msg [String] the message to send to slack
   # @param channel [String] the channel name (without the hash symbol) to send a message to
   def slack_message(config, msg, channel)
-    uri = URI.parse(config['slack']['message_url'].gsub("{channel}", channel))
+    uri = URI.parse(config['slack']['message_url'].gsub("{channel}", channel.to_s))
     payload = { token: config['slack']['token'], msg: msg }
 
     req = Net::HTTP::Post.new(uri)
@@ -44,14 +44,18 @@ module SlackNotifier
   module_function :slack_message
 end
 
+##
+# Setup redis connection for background notifications
 include SlackNotifier
 
+environment = ENV.fetch('RAILS_ENV', 'development')
+redis_conn = { url: "redis://#{environment == 'development' ? 'redis' : '127.0.0.1'}:6379" }
 Sidekiq.configure_client do |config|
-  config.redis = { :namespace => "deployment", :size => 1 }
+  config.redis = redis_conn.merge({ :namespace => "deployment", :size => 1 })
 end
 
 Sidekiq.configure_server do |config|
-  config.redis = { :namespace => "deployment" }
+  config.redis = redis_conn.merge({ :namespace => "deployment" })
 end
 
 ##
