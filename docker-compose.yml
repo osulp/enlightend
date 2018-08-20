@@ -1,0 +1,51 @@
+version: '2.3'
+
+volumes:
+  redis:
+
+networks:
+  external:
+  internal:
+
+services:
+  ##
+  # Basic image for the application server, see Dockerfile
+  app:
+    build: .
+    volumes:
+      - .:/data
+    networks:
+      internal:
+
+  web:
+    extends: app
+    # Ideally we will replace this set of commands with an entrypoint script that checks to see if these
+    # have been run already have been run and if so it just starts the server without the first three commands
+    # taking time to run.
+    command: >
+      bash -c "bundle exec unicorn -E development -p 3000"
+    depends_on:
+      redis:
+        condition: service_started
+    expose:
+      - 3000
+    links:
+      - redis
+
+  ##
+  # Runs sidekiq to process background jobs
+  workers:
+    extends: app
+    command: bundle exec sidekiq -r ./app.rb
+    depends_on:
+      - redis
+    links:
+      - redis
+
+  # Redis for the background job queues
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis:/data
+    networks:
+      internal:
