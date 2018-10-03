@@ -27,3 +27,12 @@ github:
 
   # githup api
   api_endpoint: "https://api.github.com"
+
+# datadog API configuration for creating events
+datadog:
+
+  # API key
+  api_key: "<DataDog API Key Here>"
+
+  # APP key
+  app_key: "<DataDog APP Key Here>"
