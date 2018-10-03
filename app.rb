@@ -55,12 +55,13 @@ module DataDogEventPublisher
 
   ##
   # Publish an event (https://docs.datadoghq.com/api/?lang=ruby#events)
+  # @param config [Hash] the settings.config (sinatra.yml)
   # @param text [String] the full description of the event
   # @param title [String] the event title
   # @param host [String] the server host name the app is deployed to
-  def datadog_publish_event(text, title, host)
-    @dog ||= Dogapi::Client.new(config['datadog']['api_key'], config['datadog']['app_key'], host)
-    @dog.emit_event(Dogapi::Event.new(text, msg_title: title))
+  def datadog_publish_event(config, text, title, host)
+    dog = Dogapi::Client.new(config['datadog']['api_key'], config['datadog']['app_key'], host)
+    dog.emit_event(Dogapi::Event.new(text, msg_title: title))
   end
 end
 
@@ -166,7 +167,7 @@ class Worker
     status_message = set_deploy_status(o, s)
     status_text = "#{app_name} : #{status_message} See gist for logs: #{gist['html_url']}"
     slack_message(config, status_text, channel)
-    datadog_publish_event(status_text, "#{app_name} deployed #{environment}", server)
+    datadog_publish_event(config, status_text, "#{app_name} deployed #{environment}", server)
     puts "Deployed #{app_name} to #{s}, command=#{cmd}, gist=#{gist['html_url']}, result: output=#{o}, status=#{s}"
   end
 
