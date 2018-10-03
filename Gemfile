@@ -17,3 +17,4 @@ gem "rack-test", group: :test
 gem "test-unit", group: :test
 
 gem 'ddtrace', group: :production
+gem 'dogapi'
