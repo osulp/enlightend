@@ -199,7 +199,7 @@ class Worker
       description: "#{app_name} deployment on #{Time.now}",
       public: false,
       files: {
-        "#{app_name}_deploy" => { :content => cap_out }
+        "#{app_name}_deploy" => { :content => cap_out.force_encoding('ISO-8859-1') }
       }
     }
 
