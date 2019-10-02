@@ -9,7 +9,6 @@ require 'net/http'
 require 'octokit'
 require 'redis'
 require 'sidekiq'
-require 'dogapi'
 
 ##
 # Add dig to the hash for nested deep queries
@@ -45,23 +44,6 @@ module SlackNotifier
     Net::HTTP.start(uri.host, uri.port) do |http|
       http.request(req)
     end
-  end
-end
-
-##
-# A module to publish an event to DataDog
-module DataDogEventPublisher
-  module_function
-
-  ##
-  # Publish an event (https://docs.datadoghq.com/api/?lang=ruby#events)
-  # @param config [Hash] the settings.config (sinatra.yml)
-  # @param text [String] the full description of the event
-  # @param title [String] the event title
-  # @param host [String] the server host name the app is deployed to
-  def datadog_publish_event(config, text, title, host)
-    dog = Dogapi::Client.new(config['datadog']['api_key'], config['datadog']['app_key'], host)
-    dog.emit_event(Dogapi::Event.new(text, msg_title: title))
   end
 end
 
@@ -155,7 +137,6 @@ end
 class Worker
   include Sidekiq::Worker
   include SlackNotifier
-  include DataDogEventPublisher
 
   ##
   # Perform the task of remote deploying the application, sending a slack message, and posting a gist
@@ -167,7 +148,6 @@ class Worker
     status_message = set_deploy_status(o, s)
     status_text = "#{app_name} : #{status_message} See gist for logs: #{gist['html_url']}"
     slack_message(config, status_text, channel)
-    datadog_publish_event(config, status_text, "#{app_name} deployed #{environment}", server)
     puts "Deployed #{app_name} to #{s}, command=#{cmd}, gist=#{gist['html_url']}, result: output=#{o}, status=#{s}"
   end
 
