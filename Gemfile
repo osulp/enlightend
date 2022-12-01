@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 
 gem "octokit"
 gem 'rack', '>= 1.6.11'
-gem 'rack-protection', '~> 1.5.5'
-gem "sinatra", '~> 1.4.8'
+gem 'rack-protection', '~> 3.0.4'
+gem "sinatra", '~> 3.0.4'
 
 # older version necessary for version of redis on server
 gem "capistrano"
